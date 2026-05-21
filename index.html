@@ -88,12 +88,13 @@
 
 
   // Play the loaded file
-  function play() {
+  function play(volume) {
     // as to the FAQ, a BufferSource can be played only once, so we need to recreate it for 
     // every beat and reconnect it.
     source = context.createBufferSource()
     source.buffer = buf
     source.connect(gain)
+    gain.gain.setValueAtTime(volume,context.currentTime)
     source.start(0);
   }
 
@@ -148,7 +149,7 @@
 
     if (sound_not_started == 1) {
 
-      gain = new GainNode(context)
+      gain = context.createGain();
       gain.connect(context.destination);
       playByteArray(beatsound)
       bcnt = 0;
@@ -159,7 +160,7 @@
 
   function beat_off() {
     source.stop()
-    gain.gain = 0.6
+    gain.gain.setValueAtTime(0.5, context.currentTime);
   }
 
   function beat() {
@@ -169,7 +170,8 @@
     var e;
     var cnodes;
     if ((bcnt % (2 * metrumlen)) == 0) {
-      gain.gain = 1.0
+      // gain.gain = 1.0
+      play(1.0)
       hidden = Math.floor(Math.random() * metrumlen)
       for (let i = 0; i < metrumlen; i++) {
         shade = "black"
@@ -186,8 +188,10 @@
           }
         }
       }
+    }else {
+     play(0.3)
     }
-    play()
+    
     setTimeout(beat_off, 400)
   };
  </script> 
